@@ -1,21 +1,21 @@
 const agentes = [
     
 {
-  id: "401bccf5-cf9e-489d-8412-446cd169a0f1",
+  id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   nome: "Rommel Carneiro",
-  dataDeIncorporacao: "1992/10/04",
+  dataDeIncorporacao: "1992-10-04",
   cargo: "delegado"
 },
 {
-  id: "5d87a917-71da-4702-b96d-ccf403ec75dd",
+  id: "9f8c2a9d-0b4a-4a8d-8b7a-c0f95f61e0e9",
   nome: "Larissa Oliveira",
-  dataDeIncorporacao: "2000/01/05",
+  dataDeIncorporacao: "2000-01-05",
   cargo: "investigadora"
 },
 {
-  id: "9e35d69e-02e2-4bae-8c37-3170e6ebb32f",
+  id: "d3b07384-d9a6-4a6a-85b1-4c79e4986d33",
   nome: "Beatriz Nascimento",
-  dataDeIncorporacao: "2004/04/04",
+  dataDeIncorporacao: "2004-04-04",
   cargo: "comandante"
 }
 ]

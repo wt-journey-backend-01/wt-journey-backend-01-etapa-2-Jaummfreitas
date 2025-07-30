@@ -33,6 +33,10 @@ function postAgente(req, res) {
         if (!cargo) {
             return res.status(400).json({ message: "Cargo é obrigatório" });
         }
+        if (agentes.some(a => a.id === id)) {
+            return res.status(400).json({ message: "ID já existe" });
+        }
+        
         const newAgente = { id, nome, dataDeIncorporacao, cargo};
         agentes.push(newAgente);
         res.status(201).json(newAgente);
@@ -67,6 +71,9 @@ function putAgenteById(req, res) {
         if (!cargo) {
             return res.status(400).json({ message: "Cargo é obrigatório" });
         }
+        if (agentes.some(a => a.id === id)) {
+            return res.status(400).json({ message: "ID já existe" });
+        }
 
         const newAgente = { id, nome, dataDeIncorporacao, cargo};
         agentes[agenteIndex] = newAgente;
@@ -92,6 +99,9 @@ function patchAgenteById(req, res) {
         }
         if (dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
             return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
+        }
+        if (agentes.some(a => a.id === id)) {
+            return res.status(400).json({ message: "ID já existe" });
         }
         if(id) {
             agentes[agenteIndex].id = id;

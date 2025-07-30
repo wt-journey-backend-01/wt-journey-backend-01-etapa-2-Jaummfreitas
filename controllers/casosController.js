@@ -36,6 +36,9 @@ function postCaso(req, res) {
         if (!agente_id) {
             return res.status(400).json({ message: "ID do agente é obrigatório" });
         }
+        if (casos.some(c => c.id === id)) {
+            return res.status(400).json({ message: "ID já existe" });
+        }
         const newCaso = { id, titulo, descricao, status, agente_id };
         casos.push(newCaso);
         res.status(201).json(newCaso);
@@ -73,6 +76,9 @@ function putCasoById(req, res) {
         if (!agente_id) {
             return res.status(400).json({ message: "ID do agente é obrigatório" });
         }
+        if (casos.some(c => c.id === id)) {
+            return res.status(400).json({ message: "ID já existe" });
+        }
 
         const newCaso = { id, titulo, descricao, status, agente_id };
         casos[casoIndex] = newCaso;
@@ -98,6 +104,9 @@ function patchCasoById(req, res) {
         }
         if (status && status !== "aberto" && status !== "fechado") {
             return res.status(400).json({ message: "Status deve ser 'aberto' ou 'fechado'" });
+        }
+        if (casos.some(c => c.id === id)) {
+            return res.status(400).json({ message: "ID já existe" });
         }
         if(id) {
             casos[casoIndex].id = id;
