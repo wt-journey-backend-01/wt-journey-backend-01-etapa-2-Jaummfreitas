@@ -127,7 +127,7 @@ function deleteCasoById(req, res) {
         }
 
         casos.splice(casoIndex,1);
-        res.status(204).json( { message: "Caso deletado com sucesso" });
+        res.status(204).send();
 };
 
 module.exports = {

@@ -7,8 +7,8 @@ function getAllAgentes(req, res) {
 
 function getAgenteById(req, res) {
         const agenteId = req.params.id;
-        const agentes = agenteRepository.findAll();
-        const agente = agente.find(a => a.id === agenteId);
+        const agentes = agentesRepository.findAll();
+        const agente = agentes.find(a => a.id === agenteId);
         if (!agente) {
             return res.status(404).json({ message: "Agente não encontrado"});
         }  
@@ -27,7 +27,7 @@ function postAgente(req, res) {
         if (!dataDeIncorporacao) {
             return res.status(400).json({ message: "Data de Incorporação é obrigatória" });
         }
-        if (data && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
+        if (dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
             return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
         }
         if (!cargo) {
@@ -61,7 +61,7 @@ function putAgenteById(req, res) {
         if (!dataDeIncorporacao) {
             return res.status(400).json({ message: "Data de Incorporação é obrigatória" });
         }
-        if (data && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
+        if (dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
             return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
         }
         if (!cargo) {
@@ -69,8 +69,8 @@ function putAgenteById(req, res) {
         }
 
         const newAgente = { id, nome, dataDeIncorporacao, cargo};
-        agente[agenteIndex] = newAgente;
-        res.status(200).json(agente[agenteIndex]);
+        agentes[agenteIndex] = newAgente;
+        res.status(200).json(agentes[agenteIndex]);
 };
 
 function patchAgenteById(req, res) {
@@ -81,7 +81,7 @@ function patchAgenteById(req, res) {
             return res.status(404).json({ message: "Agente não encontrado"});
         }  
 
-        const agenteIndex = agente.findIndex(a => a.id === agenteId);    
+        const agenteIndex = agentes.findIndex(a => a.id === agenteId);    
         if (agenteIndex === -1) {
             return res.status(404).json({ message: "Agente não encontrado" });
         }
@@ -94,19 +94,19 @@ function patchAgenteById(req, res) {
             return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
         }
         if(id) {
-            agente[agenteIndex].id = id;
+            agentes[agenteIndex].id = id;
         }
         if(nome) {
-            agente[agenteIndex].nome = nome;
+            agentes[agenteIndex].nome = nome;
         }
         if(dataDeIncorporacao) {
-            agente[agenteIndex].dataDeIncorporacao = dataDeIncorporacao;
+            agentes[agenteIndex].dataDeIncorporacao = dataDeIncorporacao;
         }
         if(cargo) {
-            agente[agenteIndex].cargo = cargo;
+            agentes[agenteIndex].cargo = cargo;
         }
     
-        res.status(200).json(agente[agenteIndex]);
+        res.status(200).json(agentes[agenteIndex]);
 };
 
 function deleteAgenteById(req, res) {
@@ -118,7 +118,7 @@ function deleteAgenteById(req, res) {
         }
 
         agentes.splice(agenteIndex,1);
-        res.status(204).json( { message: "Agente deletado com sucesso" });
+        res.status(204).send();
 };
 
 module.exports = {
