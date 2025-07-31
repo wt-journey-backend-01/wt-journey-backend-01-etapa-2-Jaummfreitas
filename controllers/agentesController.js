@@ -15,7 +15,7 @@ function getAgenteById(req, res) {
 };
 
 function postAgente(req, res) {
-        const {data} = req.body;
+        const data = req.body;
         if (data.id) {
             return res.status(400).json({ message: "Não pode conter ID" });
         }
@@ -43,7 +43,7 @@ function putAgenteById(req, res) {
             return res.status(404).json({ message: "Agente não encontrado"});
         }  
 
-        const {data} = req.body;
+        const data = req.body;
         if (data.id) {
             return res.status(400).json({ message: "Não pode conter ID" });
         }
@@ -71,7 +71,7 @@ function patchAgenteById(req, res) {
             return res.status(404).json({ message: "Agente não encontrado"});
         }  
 
-        const {data} = req.body;
+        const data = req.body;
         if (!data.nome && !data.dataDeIncorporacao && !data.cargo) {
             return res.status(400).json({ message: "Pelo menos um campo deve ser atualizado" });
         }

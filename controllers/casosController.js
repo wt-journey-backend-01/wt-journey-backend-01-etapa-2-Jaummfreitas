@@ -1,4 +1,5 @@
 const casosRepository = require("../repositories/casosRepository");
+const agentesRepository = require("../repositories/agentesRepository");
 function getAllCasos(req, res) {
 
         const casos = casosRepository.findAll()
@@ -15,7 +16,7 @@ function getCasoById(req, res) {
 };
 
 function postCaso(req, res) {
-        const {data} = req.body;
+        const data = req.body;
         if (data.id) {
             return res.status(400).json({ message: "Não pode conter ID" });
         }
@@ -33,6 +34,9 @@ function postCaso(req, res) {
         }
         if (!data.agente_id) {
             return res.status(400).json({ message: "ID do agente é obrigatório" });
+        }
+        if (!agentesRepository.findById(data.agente_id)) {
+            return res.status(404).json({ message: "Agente não encontrado para o ID fornecido" });
         }
         const newCaso = casosRepository.createCaso(data);
         res.status(201).json(newCaso);
@@ -45,7 +49,7 @@ function putCasoById(req, res) {
             return res.status(404).json({ message: "Caso não encontrado"});
         }  
 
-        const {data} = req.body;
+        const data = req.body;
         if (data.id) {
             return res.status(400).json({ message: "Não pode conter ID" });
         }
@@ -63,6 +67,9 @@ function putCasoById(req, res) {
         }
         if (!data.agente_id) {
             return res.status(400).json({ message: "ID do agente é obrigatório" });
+        }
+        if (!agentesRepository.findById(data.agente_id)) {
+            return res.status(404).json({ message: "Agente não encontrado para o ID fornecido" });
         }
 
         const updatedCaso = casosRepository.updateCaso(casoId, data);
@@ -76,7 +83,7 @@ function patchCasoById(req, res) {
             return res.status(404).json({ message: "Caso não encontrado"});
         }  
 
-        const {data} = req.body;
+        const data = req.body;
         if (!data.titulo && !data.descricao && !data.status && !data.agente_id) {
             return res.status(400).json({ message: "Pelo menos um campo deve ser atualizado" });
         }
@@ -85,6 +92,9 @@ function patchCasoById(req, res) {
         }
         if (data.status && data.status !== "aberto" && data.status !== "solucionado") {
             return res.status(400).json({ message: "Status deve ser 'aberto' ou 'solucionado'" });
+        }
+        if (data.agente_id && !agentesRepository.findById(data.agente_id)) {
+            return res.status(404).json({ message: "Agente não encontrado para o ID fornecido" });
         }
         const updatedCaso = casosRepository.patchCaso(casoId, data);
         res.status(200).json(updatedCaso);

@@ -1,3 +1,4 @@
+const { v4: uuid } = require('uuid4');
 const casos = [
     {
         id: "f5fb2ad5-22a8-4cb4-90f2-8733517a0d46",
@@ -35,7 +36,7 @@ function findAll() {
 }
 
 function findById(casoId) {
-    const casos = casosRepository.findAll();
+    const casos = findAll();
     const caso = casos.find(a => a.id === casoId);
     return caso;
 }
@@ -52,7 +53,7 @@ function createCaso(data) {
 }
 
 function updateCaso(casoId, data) {
-    const casos = casosRepository.findAll();
+    const casos = findAll();
     const casoIndex = casos.findIndex(a => a.id === casoId);
 
     const updatedCaso = {
@@ -65,7 +66,7 @@ function updateCaso(casoId, data) {
 }
 
 function patchCaso(casoId, data) {
-    const casos = casosRepository.findAll();
+    const casos = findAll();
     const casoIndex = casos.findIndex(a => a.id === casoId);
 
     const updatedCaso = {
@@ -78,7 +79,7 @@ function patchCaso(casoId, data) {
 }
 
 function deleteCaso(casoId) {
-    const casos = casosRepository.findAll();
+    const casos = findAll();
     const casoIndex = casos.findIndex(a => a.id === casoId)
     casos.splice(casoIndex, 1);
     return; 

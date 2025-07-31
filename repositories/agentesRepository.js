@@ -1,3 +1,4 @@
+const { v4: uuid } = require('uuid4');
 const agentes = [
     
 {
@@ -25,7 +26,7 @@ function findAll() {
 }
 
 function findById(agenteId) {
-    const agentes = agentesRepository.findAll();
+    const agentes = findAll();
     const agente = agentes.find(a => a.id === agenteId);
     return agente;
 }
@@ -42,7 +43,7 @@ function createAgente(data) {
 }
 
 function updateAgente(agenteId, data) {
-    const agentes = agentesRepository.findAll();
+    const agentes = findAll();
     const agenteIndex = agentes.findIndex(a => a.id === agenteId);
 
     const updatedAgente = {
@@ -55,7 +56,7 @@ function updateAgente(agenteId, data) {
 }
 
 function patchAgente(agenteId, data) {
-    const agentes = agentesRepository.findAll();
+    const agentes = findAll();
     const agenteIndex = agentes.findIndex(a => a.id === agenteId);
 
     const updatedAgente = {
@@ -68,7 +69,7 @@ function patchAgente(agenteId, data) {
 }
 
 function deleteAgente(agenteId) {
-    const agentes = agentesRepository.findAll();
+    const agentes = findAll();
     const agenteIndex = agentes.findIndex(a => a.id === agenteId)
     agentes.splice(agenteIndex, 1);
     return; 
