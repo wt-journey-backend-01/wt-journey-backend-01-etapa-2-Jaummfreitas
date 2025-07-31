@@ -1,4 +1,4 @@
-const { v4: uuid } = require('uuid4');
+const { v4: uuid } = require('uuid');
 const agentes = [
     
 {

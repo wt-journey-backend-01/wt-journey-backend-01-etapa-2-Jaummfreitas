@@ -1,4 +1,4 @@
-const { v4: uuid } = require('uuid4');
+const { v4: uuid } = require('uuid');
 const casos = [
     {
         id: "f5fb2ad5-22a8-4cb4-90f2-8733517a0d46",
