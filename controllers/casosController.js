@@ -7,8 +7,7 @@ function getAllCasos(req, res) {
 
 function getCasoById(req, res) {
         const casoId = req.params.id;
-        const casos = casosRepository.findAll();
-        const caso = casos.find(c => c.id === casoId);
+        const caso = casosRepository.findById(casoId);
         if (!caso) {
             return res.status(404).json({ message: "Caso não encontrado"});
         }  
@@ -16,126 +15,89 @@ function getCasoById(req, res) {
 };
 
 function postCaso(req, res) {
-        const casos = casosRepository.findAll();
-        const {id,titulo, descricao, status, agente_id} = req.body;
-        if (!id) {
-            return res.status(400).json({ message: "ID é obrigatório" });
+        const {data} = req.body;
+        if (data.id) {
+            return res.status(400).json({ message: "Não pode conter ID" });
         }
-        if (!titulo) {
+        if (!data.titulo) {
             return res.status(400).json({ message: "Título é obrigatório" });
         }
-        if (!descricao) {
+        if (!data.descricao) {
             return res.status(400).json({ message: "Descrição é obrigatória" });
         }
-        if (!status) {
+        if (!data.status) {
             return res.status(400).json({ message: "Status é obrigatório" });
         }
-        if (status !== "aberto" && status !== "fechado") {
-            return res.status(400).json({ message: "Status deve ser 'aberto' ou 'fechado'" });
+        if (data.status !== "aberto" && data.status !== "solucionado") {
+            return res.status(400).json({ message: "Status deve ser 'aberto' ou 'solucionado'" });
         }
-        if (!agente_id) {
+        if (!data.agente_id) {
             return res.status(400).json({ message: "ID do agente é obrigatório" });
         }
-        if (casos.some(c => c.id === id)) {
-            return res.status(400).json({ message: "ID já existe" });
-        }
-        const newCaso = { id, titulo, descricao, status, agente_id };
-        casos.push(newCaso);
+        const newCaso = casosRepository.createCaso(data);
         res.status(201).json(newCaso);
 };
 
 function putCasoById(req, res) {
         const casoId = req.params.id;
-        const casos = casosRepository.findAll();
-        const caso = casos.find(c => c.id === casoId);
+        const caso = casosRepository.findById(casoId);
         if (!caso) {
             return res.status(404).json({ message: "Caso não encontrado"});
         }  
 
-        const casoIndex = casos.findIndex(c => c.id === casoId);    
-        if (casoIndex === -1) {
-            return res.status(404).json({ message: "Caso não encontrado" });
+        const {data} = req.body;
+        if (data.id) {
+            return res.status(400).json({ message: "Não pode conter ID" });
         }
-
-        const {id,titulo, descricao, status, agente_id} = req.body;
-        if (!id) {
-            return res.status(400).json({ message: "ID é obrigatório" });
-        }
-        if (!titulo) {
+        if (!data.titulo) {
             return res.status(400).json({ message: "Título é obrigatório" });
         }
-        if (!descricao) {
+        if (!data.descricao) {
             return res.status(400).json({ message: "Descrição é obrigatória" });
         }
-        if (!status) {
+        if (!data.status) {
             return res.status(400).json({ message: "Status é obrigatório" });
         }
-        if (status !== "aberto" && status !== "fechado") {
-            return res.status(400).json({ message: "Status deve ser 'aberto' ou 'fechado'" });
+        if (data.status !== "aberto" && data.status !== "solucionado") {
+            return res.status(400).json({ message: "Status deve ser 'aberto' ou 'solucionado'" });
         }
-        if (!agente_id) {
+        if (!data.agente_id) {
             return res.status(400).json({ message: "ID do agente é obrigatório" });
         }
-        if (casos.some(c => c.id === id)) {
-            return res.status(400).json({ message: "ID já existe" });
-        }
 
-        const newCaso = { id, titulo, descricao, status, agente_id };
-        casos[casoIndex] = newCaso;
-        res.status(200).json(casos[casoIndex]);
+        const updatedCaso = casosRepository.updateCaso(casoId, data);
+        res.status(200).json(updatedCaso);
 };
 
 function patchCasoById(req, res) {
         const casoId = req.params.id;
-        const casos = casosRepository.findAll();
-        const caso = casos.find(c => c.id === casoId);
+        const caso = casosRepository.findById(casoId);
         if (!caso) {
             return res.status(404).json({ message: "Caso não encontrado"});
         }  
 
-        const casoIndex = casos.findIndex(c => c.id === casoId);    
-        if (casoIndex === -1) {
-            return res.status(404).json({ message: "Caso não encontrado" });
-        }
-
-        const {id,titulo, descricao, status, agente_id} = req.body;
-        if (!id && !titulo && !descricao && !status && !agente_id) {
+        const {data} = req.body;
+        if (!data.titulo && !data.descricao && !data.status && !data.agente_id) {
             return res.status(400).json({ message: "Pelo menos um campo deve ser atualizado" });
         }
-        if (status && status !== "aberto" && status !== "fechado") {
-            return res.status(400).json({ message: "Status deve ser 'aberto' ou 'fechado'" });
+        if (data.id) {
+            return res.status(400).json({ message: "Não pode conter ID" });
         }
-        if (casos.some(c => c.id === id)) {
-            return res.status(400).json({ message: "ID já existe" });
+        if (data.status && data.status !== "aberto" && data.status !== "solucionado") {
+            return res.status(400).json({ message: "Status deve ser 'aberto' ou 'solucionado'" });
         }
-        if(id) {
-            casos[casoIndex].id = id;
-        }
-        if(titulo) {
-            casos[casoIndex].titulo = titulo;
-        }
-        if(descricao) {
-            casos[casoIndex].descricao = descricao;
-        }
-        if(status) {
-            casos[casoIndex].status = status;
-        }
-        if(agente_id) {
-            casos[casoIndex].agente_id = agente_id;
-        }
-    
-        res.status(200).json(casos[casoIndex]);
+        const updatedCaso = casosRepository.patchCaso(casoId, data);
+        res.status(200).json(updatedCaso);
 };
 
 function deleteCasoById(req, res) {
-        const casos = casosRepository.findAll();
         const casoId = req.params.id;
-        const casoIndex = casos.findIndex(c => c.id === casoId);    
-        if (casoIndex === -1) {
-            return res.status(404).json({ message: "Caso não encontrado" });
-        }
+        const caso = casosRepository.findById(casoId);
+        if (!caso) {
+            return res.status(404).json({ message: "Caso não encontrado"});
+        }  
 
-        casos.splice(casoIndex,1);
+        casosRepository.deleteCaso(casoId);
         res.status(204).send();
 };
 

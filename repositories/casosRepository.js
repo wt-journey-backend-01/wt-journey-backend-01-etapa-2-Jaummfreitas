@@ -11,7 +11,7 @@ const casos = [
         id: "a2c4e19d-7f0b-4d55-9b3c-123456789abc",
         titulo: "furto",
         descricao: "Carteira foi furtada às 15:20 do dia 11/07/2007 na região do bairro Centro.",
-        status: "fechado",
+        status: "solucionado",
         agente_id: "d3b07384-d9a6-4a6a-85b1-4c79e4986d33" 
     },
     {
@@ -33,6 +33,61 @@ const casos = [
 function findAll() {
     return casos
 }
+
+function findById(casoId) {
+    const casos = casosRepository.findAll();
+    const caso = casos.find(a => a.id === casoId);
+    return caso;
+}
+
+function createCaso(data) {
+
+    const newCaso = {
+        id: uuid(),
+        ...data
+    };
+ 
+    casos.push(newCaso);
+    return newCaso;
+}
+
+function updateCaso(casoId, data) {
+    const casos = casosRepository.findAll();
+    const casoIndex = casos.findIndex(a => a.id === casoId);
+
+    const updatedCaso = {
+        ...casos[casoIndex],
+        ...data
+    };
+
+    casos[casoIndex] = updatedCaso;
+    return updatedCaso;
+}
+
+function patchCaso(casoId, data) {
+    const casos = casosRepository.findAll();
+    const casoIndex = casos.findIndex(a => a.id === casoId);
+
+    const updatedCaso = {
+        ...casos[casoIndex],
+        ...data
+    };
+
+    casos[casoIndex] = updatedCaso;
+    return updatedCaso;
+}
+
+function deleteCaso(casoId) {
+    const casos = casosRepository.findAll();
+    const casoIndex = casos.findIndex(a => a.id === casoId)
+    casos.splice(casoIndex, 1);
+    return; 
+}
 module.exports = {
-    findAll
+    findAll,
+    findById,
+    createCaso,
+    updateCaso,
+    patchCaso,
+    deleteCaso
 }

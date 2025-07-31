@@ -7,8 +7,7 @@ function getAllAgentes(req, res) {
 
 function getAgenteById(req, res) {
         const agenteId = req.params.id;
-        const agentes = agentesRepository.findAll();
-        const agente = agentes.find(a => a.id === agenteId);
+        const agente = agentesRepository.findById(agenteId);
         if (!agente) {
             return res.status(404).json({ message: "Agente não encontrado"});
         }  
@@ -16,118 +15,84 @@ function getAgenteById(req, res) {
 };
 
 function postAgente(req, res) {
-        const agentes = agentesRepository.findAll();
-        const {id, nome, dataDeIncorporacao, cargo} = req.body;
-        if (!id) {
-            return res.status(400).json({ message: "ID é obrigatório" });
+        const {data} = req.body;
+        if (data.id) {
+            return res.status(400).json({ message: "Não pode conter ID" });
         }
-        if (!nome) {
+        if (!data.nome) {
             return res.status(400).json({ message: "Nome é obrigatório" });
         }
-        if (!dataDeIncorporacao) {
+        if (!data.dataDeIncorporacao) {
             return res.status(400).json({ message: "Data de Incorporação é obrigatória" });
         }
-        if (dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
+        if (data.dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(data.dataDeIncorporacao)) {
             return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
         }
-        if (!cargo) {
+        if (!data.cargo) {
             return res.status(400).json({ message: "Cargo é obrigatório" });
         }
-        if (agentes.some(a => a.id === id)) {
-            return res.status(400).json({ message: "ID já existe" });
-        }
         
-        const newAgente = { id, nome, dataDeIncorporacao, cargo};
-        agentes.push(newAgente);
+        const newAgente =agentesRepository.createAgente(data);
         res.status(201).json(newAgente);
 };
 
 function putAgenteById(req, res) {
         const agenteId = req.params.id;
-        const agentes = agentesRepository.findAll();
-        const agente = agentes.find(a => a.id === agenteId);
+        const agente = agentesRepository.findById(agenteId);
         if (!agente) {
             return res.status(404).json({ message: "Agente não encontrado"});
         }  
 
-        const agenteIndex = agentes.findIndex(a => a.id === agenteId);    
-        if (agenteIndex === -1) {
-            return res.status(404).json({ message: "Agente não encontrado" });
+        const {data} = req.body;
+        if (data.id) {
+            return res.status(400).json({ message: "Não pode conter ID" });
         }
-
-        const {id, nome, dataDeIncorporacao, cargo} = req.body;
-        if (!id) {
-            return res.status(400).json({ message: "ID é obrigatório" });
-        }
-        if (!nome) {
+        if (!data.nome) {
             return res.status(400).json({ message: "Nome é obrigatório" });
         }
-        if (!dataDeIncorporacao) {
+        if (!data.dataDeIncorporacao) {
             return res.status(400).json({ message: "Data de Incorporação é obrigatória" });
         }
-        if (dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
+        if (data.dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(data.dataDeIncorporacao)) {
             return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
         }
-        if (!cargo) {
+        if (!data.cargo) {
             return res.status(400).json({ message: "Cargo é obrigatório" });
         }
-        if (agentes.some(a => a.id === id)) {
-            return res.status(400).json({ message: "ID já existe" });
-        }
 
-        const newAgente = { id, nome, dataDeIncorporacao, cargo};
-        agentes[agenteIndex] = newAgente;
-        res.status(200).json(agentes[agenteIndex]);
+        const updatedAgente = agentesRepository.updateAgente(agenteId, data);
+        res.status(200).json(updatedAgente);
 };
 
 function patchAgenteById(req, res) {
         const agenteId = req.params.id;
-        const agentes = agentesRepository.findAll();
-        const agente = agentes.find(a => a.id === agenteId);
+        const agente = agentesRepository.findById(agenteId);
         if (!agente) {
             return res.status(404).json({ message: "Agente não encontrado"});
         }  
 
-        const agenteIndex = agentes.findIndex(a => a.id === agenteId);    
-        if (agenteIndex === -1) {
-            return res.status(404).json({ message: "Agente não encontrado" });
-        }
-
-        const {id,nome, dataDeIncorporacao, cargo} = req.body;
-        if (!id && !nome && !dataDeIncorporacao && !cargo) {
+        const {data} = req.body;
+        if (!data.nome && !data.dataDeIncorporacao && !data.cargo) {
             return res.status(400).json({ message: "Pelo menos um campo deve ser atualizado" });
         }
-        if (dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(dataDeIncorporacao)) {
+        if (data.id) {
+            return res.status(400).json({ message: "Não pode conter ID" });
+        }
+        if (data.dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(data.dataDeIncorporacao)) {
             return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
         }
-        if (agentes.some(a => a.id === id)) {
-            return res.status(400).json({ message: "ID já existe" });
-        }
-        if(id) {
-            agentes[agenteIndex].id = id;
-        }
-        if(nome) {
-            agentes[agenteIndex].nome = nome;
-        }
-        if(dataDeIncorporacao) {
-            agentes[agenteIndex].dataDeIncorporacao = dataDeIncorporacao;
-        }
-        if(cargo) {
-            agentes[agenteIndex].cargo = cargo;
-        }
-    
-        res.status(200).json(agentes[agenteIndex]);
+        const updatedAgente = agentesRepository.patchAgente(agenteId, data);
+        res.status(200).json(updatedAgente);
 };
 
 function deleteAgenteById(req, res) {
-        const agentes = agentesRepository.findAll();
         const agenteId = req.params.id;
-        const agenteIndex = agentes.findIndex(a => a.id === agenteId);    
-        if (agenteIndex === -1) {
-            return res.status(404).json({ message: "Agente não encontrado" });
-        }
+        const agente = agentesRepository.findById(agenteId);
+        if (!agente) {
+            return res.status(404).json({ message: "Agente não encontrado"});
+        }  
 
-        agentes.splice(agenteIndex,1);
+        agentesRepository.deleteAgente(agenteId);
         res.status(204).send();
 };
 

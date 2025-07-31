@@ -23,6 +23,61 @@ const agentes = [
 function findAll() {
     return agentes
 }
+
+function findById(agenteId) {
+    const agentes = agentesRepository.findAll();
+    const agente = agentes.find(a => a.id === agenteId);
+    return agente;
+}
+
+function createAgente(data) {
+
+    const newAgente = {
+        id: uuid(),
+        ...data
+    };
+ 
+    agentes.push(newAgente);
+    return newAgente;
+}
+
+function updateAgente(agenteId, data) {
+    const agentes = agentesRepository.findAll();
+    const agenteIndex = agentes.findIndex(a => a.id === agenteId);
+
+    const updatedAgente = {
+        ...agentes[agenteIndex],
+        ...data
+    };
+
+    agentes[agenteIndex] = updatedAgente;
+    return updatedAgente;
+}
+
+function patchAgente(agenteId, data) {
+    const agentes = agentesRepository.findAll();
+    const agenteIndex = agentes.findIndex(a => a.id === agenteId);
+
+    const updatedAgente = {
+        ...agentes[agenteIndex],
+        ...data
+    };
+
+    agentes[agenteIndex] = updatedAgente;
+    return updatedAgente;
+}
+
+function deleteAgente(agenteId) {
+    const agentes = agentesRepository.findAll();
+    const agenteIndex = agentes.findIndex(a => a.id === agenteId)
+    agentes.splice(agenteIndex, 1);
+    return; 
+}
 module.exports = {
-    findAll
+    findAll,
+    findById,
+    createAgente,
+    updateAgente,
+    patchAgente,
+    deleteAgente
 }
