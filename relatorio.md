@@ -1,180 +1,200 @@
 <sup>Esse é um feedback gerado por IA, ele pode conter erros.</sup>
 
-Você tem 5 créditos restantes para usar o sistema de feedback AI.
+Você tem 4 créditos restantes para usar o sistema de feedback AI.
 
 # Feedback para Jaummfreitas:
 
-Nota final: **37.5/100**
+Nota final: **97.8/100**
 
-# Feedback para Jaummfreitas 🚨👮‍♂️
+Olá, Jaummfreitas! 👋🚀
 
-Olá, Jaummfreitas! Tudo bem? 😊 Primeiramente, parabéns pelo esforço em montar essa API para o Departamento de Polícia! Construir uma aplicação RESTful com Node.js e Express.js não é tarefa simples, e você já colocou muita coisa boa no seu código. Vamos juntos analisar o que está funcionando bem e onde podemos melhorar para deixar sua API tinindo! 💪✨
-
----
-
-## 🎉 Pontos Fortes que Merecem Destaque
-
-- **Arquitetura Modular:** Você estruturou seu projeto com rotas, controllers e repositories, exatamente como esperado. Isso é fundamental para manter o código organizado e escalável. Por exemplo, seu arquivo `routes/agentesRoutes.js` está bem organizado e conecta corretamente os métodos HTTP aos controllers.
-
-- **Endpoints Básicos Implementados:** Os métodos HTTP principais (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) para `/agentes` e `/casos` estão presentes e com boa lógica de validação básica.
-
-- **Validações de Dados:** Você implementou validações importantes, como verificar campos obrigatórios e formatos (exemplo da data de incorporação do agente). Isso ajuda a manter a integridade dos dados.
-
-- **Tratamento de Erros:** Vejo que você retorna status 400 para payloads mal formatados e 404 para recursos não encontrados, o que é essencial para uma API robusta.
-
-- **Bônus (mesmo que parcialmente):** Você tentou implementar filtros e ordenações, o que é um ótimo passo para avançar no projeto!
+Primeiramente, parabéns pelo excelente trabalho! 🎉 Você entregou uma API RESTful muito bem estruturada, com todos os endpoints principais implementados para os recursos `/agentes` e `/casos`. Sua organização em rotas, controllers e repositories está bem clara, e o uso do Express está muito bem aplicado. Além disso, você cuidou direitinho das validações e do tratamento de erros, garantindo respostas com status codes apropriados — isso é fundamental para uma API robusta! 👏👏
 
 ---
 
-## 🔎 Análise Profunda e Recomendações de Melhoria
+## 🎯 Pontos Fortes que Merecem Destaque
 
-### 1. **Validação do formato dos IDs (UUID) para agentes e casos**
+- **Arquitetura modular**: O projeto está bem organizado com pastas separadas para rotas, controllers, repositories e utils, exatamente como o esperado.
+- **Endpoints completos**: Você implementou todos os métodos HTTP (GET, POST, PUT, PATCH, DELETE) para `/agentes` e `/casos`, com validações consistentes.
+- **Validações detalhadas**: As checagens de campos obrigatórios, formatos (como data no formato `YYYY-MM-DD`) e restrições de enum (`status` dos casos) estão muito bem feitas.
+- **Tratamento de erros personalizado**: Você retorna mensagens claras e status apropriados para erros 400 e 404, o que deixa a API amigável para quem a consome.
+- **Uso correto do UUID** para IDs e geração automática.
+- **Implementação de filtros e ordenações (bônus)**: Você já começou a trabalhar nos filtros e ordenações, o que é um diferencial incrível para a sua nota e seu aprendizado! 🌟
 
-> Penalidade detectada: *"Validation: ID utilizado para agentes não é UUID"*  
-> Penalidade detectada: *"Validation: ID utilizado para casos não é UUID"*
+---
 
-**O que eu percebi no seu código:**  
-Nos seus repositories, você está usando o pacote `uuid4` para gerar IDs, o que é ótimo. Mas o nome da função que você importa é `v4` (isso é correto). Porém, o pacote correto para gerar UUIDs v4 é geralmente `uuid` (não `uuid4`). Isso pode causar IDs que não são válidos UUIDs v4, e os testes esperam IDs nesse formato.
+## 🔍 Análise Detalhada e Oportunidades de Melhoria
 
-**Exemplo do seu código:**
+### 1. Validação da Data de Incorporação no Futuro
+
+Vi no seu código do `agentesController.js` que você valida o formato da data de incorporação, mas não impede que datas futuras sejam aceitas. Isso causou uma penalidade, pois agentes não podem ter data de incorporação no futuro.
+
+No seu `postAgente` (e também nos métodos `putAgenteById` e `patchAgenteById`), você faz:
 
 ```js
-const { v4: uuid } = require('uuid4'); // Aqui está o problema
+if (data.dataDeIncorporacao && !/^\d{4}-\d{2}-\d{2}$/.test(data.dataDeIncorporacao)) {
+    return res.status(400).json({ message: "Data de incorporação deve seguir o formato YYYY-MM-DD" });
+}
 ```
 
-**O que eu recomendo:**  
-Troque o pacote para o `uuid` oficial, que é o padrão para gerar UUIDs v4. Ele é muito usado, estável e gera IDs no formato correto.
-
-```bash
-npm uninstall uuid4
-npm install uuid
-```
-
-E no código:
+Mas não verifica se a data é maior que a data atual. Para corrigir, você pode incluir uma validação extra assim:
 
 ```js
-const { v4: uuid } = require('uuid');
+const dataIncorp = new Date(data.dataDeIncorporacao);
+const hoje = new Date();
+hoje.setHours(0,0,0,0); // Zerar horas para comparar só a data
+
+if (dataIncorp > hoje) {
+    return res.status(400).json({ message: "Data de incorporação não pode ser no futuro" });
+}
 ```
 
-Assim, seus IDs terão o formato correto e os testes de validação de UUID vão passar.
+Essa verificação deve ser aplicada em todos os lugares onde a data de incorporação é recebida (POST, PUT, PATCH). Assim, você garante que agentes não sejam registrados com datas inválidas. Isso ajuda a manter a integridade dos seus dados e evita problemas futuros no uso da API.
+
+> Recomendo dar uma olhada neste vídeo para aprender mais sobre validação de dados em APIs Node.js/Express:  
+> https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_
 
 ---
 
-### 2. **Estrutura de pastas e arquivos**
+### 2. Filtros e Ordenações nos Endpoints — Ainda Não Implementados
 
-> Penalidade detectada: *"Static files: usuário não seguiu estrutura de arquivos à risca"*
+Notei que você já definiu muito bem as rotas e a documentação Swagger para filtros nos endpoints, especialmente para `/agentes` e `/casos` (ex: filtrar casos por `status`, `agente_id`, e busca por palavras-chave). Porém, olhando o código dos controllers, os métodos `getAllAgentes` e `getAllCasos` apenas retornam tudo sem aplicar filtros ou ordenações:
 
-**O que eu vi:**  
-Seu projeto está bem organizado, mas falta a pasta `docs/` com o arquivo `swagger.js` e o arquivo `utils/errorHandler.js`. Mesmo que sejam opcionais para rodar a API, o enunciado pede essa estrutura para manter padronização e facilitar a manutenção.
+```js
+function getAllAgentes(req, res) {
+    const agentes = agentesRepository.findAll()
+    res.status(200).json(agentes)
+}
 
-**Por que isso importa?**  
-Ter essa estrutura ajuda a escalar o projeto, facilita a leitura para outros desenvolvedores e é uma boa prática profissional. Além disso, pode ser requisito para a aprovação do projeto.
-
-**Como ajustar:**  
-Crie as pastas e arquivos conforme abaixo, mesmo que inicialmente estejam vazios ou com código básico:
-
-```
-docs/
-└── swagger.js  (pode conter a configuração inicial do Swagger para documentação)
-
-utils/
-└── errorHandler.js (pode conter middlewares para tratamento de erros)
+function getAllCasos(req, res) {
+    const casos = casosRepository.findAll()
+    res.status(200).json(casos)
+}
 ```
 
-Se quiser, posso ajudar com exemplos para esses arquivos!
+Aqui está a raiz do motivo pelo qual os testes bônus de filtragem e ordenação não passaram. Para destravar esses bônus, você precisa:
 
-**Para entender melhor a arquitetura MVC e organização de pastas, recomendo este vídeo:**  
-https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH
+- Capturar os parâmetros de query (`req.query`) para filtros e ordenação.
+- Filtrar os arrays em memória conforme os parâmetros recebidos.
+- Ordenar os resultados conforme o parâmetro `sortBy` e `order` (asc/desc).
+- Retornar o resultado filtrado e ordenado.
 
----
-
-### 3. **Falhas nas operações básicas de agentes e casos**
-
-Você implementou os endpoints, mas percebi que muitos testes de criação, leitura, atualização e deleção falharam. Vamos entender o porquê:
-
-- **Possível causa raiz:**  
-Os métodos dos repositories estão corretos, mas a validação dos IDs e o formato dos dados podem estar impactando.
-
-- **Exemplo importante:**  
-Você está validando se o payload contém `id` e bloqueia isso, o que está correto. Porém, se o ID gerado não for um UUID válido, o sistema pode não reconhecer o recurso depois.
-
-- **Outro ponto:**  
-No `repositories`, você faz `const agentes = findAll();` dentro de várias funções, mas `findAll()` retorna o array global. Isso não é um problema, mas cuidado para não redeclarar variáveis com o mesmo nome dentro da função, isso pode confundir.
-
----
-
-### 4. **Filtros, ordenações e funcionalidades bônus**
-
-Você tentou implementar filtros e ordenações, mas não encontrei no código enviado as funções específicas para isso.
-
-**O que isso significa?**  
-Sem essas implementações, os filtros e ordenações não funcionarão, e isso impacta diretamente a nota bônus.
-
-**Como posso te ajudar?**  
-Posso te mostrar um exemplo simples de como implementar filtro por status no endpoint `/casos`:
+Por exemplo, para o filtro simples de casos por `status`:
 
 ```js
 function getAllCasos(req, res) {
-    const { status } = req.query;
     let casos = casosRepository.findAll();
+
+    const { status, agente_id, search } = req.query;
 
     if (status) {
         casos = casos.filter(caso => caso.status === status);
+    }
+
+    if (agente_id) {
+        casos = casos.filter(caso => caso.agente_id === agente_id);
+    }
+
+    if (search) {
+        const searchLower = search.toLowerCase();
+        casos = casos.filter(caso =>
+            caso.titulo.toLowerCase().includes(searchLower) ||
+            caso.descricao.toLowerCase().includes(searchLower)
+        );
     }
 
     res.status(200).json(casos);
 }
 ```
 
-Isso já é um ótimo começo para filtros simples!
+E para agentes, você pode implementar ordenação por `dataDeIncorporacao`:
+
+```js
+function getAllAgentes(req, res) {
+    let agentes = agentesRepository.findAll();
+
+    const { sortBy, order } = req.query;
+
+    if (sortBy === "dataDeIncorporacao") {
+        agentes = agentes.sort((a, b) => {
+            const dateA = new Date(a.dataDeIncorporacao);
+            const dateB = new Date(b.dataDeIncorporacao);
+            if (order === "desc") {
+                return dateB - dateA;
+            }
+            return dateA - dateB; // asc por padrão
+        });
+    }
+
+    res.status(200).json(agentes);
+}
+```
+
+Esse tipo de lógica vai destravar os bônus de filtragem e ordenação, deixando sua API ainda mais poderosa e flexível! 💪
+
+> Para entender melhor como usar query params e filtrar dados no Express, recomendo este vídeo:  
+> https://youtu.be/--TQwiNIw28  
+>
+> E para entender a arquitetura MVC e organização do projeto, este vídeo é excelente:  
+> https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH
 
 ---
 
-### 5. **Mensagens de erro customizadas**
+### 3. Organização e Estrutura do Projeto — Está Perfeita!
 
-Você já tem mensagens claras de erro, o que é ótimo! Porém, para melhorar, pode criar um middleware centralizado de tratamento de erros para evitar repetir código em todos os controllers.
+Só para reforçar, sua estrutura de diretórios está exatamente como pedimos, o que é ótimo! Isso facilita a manutenção e escalabilidade do projeto.
 
-Assim, seu código fica mais limpo e fácil de manter.
+```
+.
+├── controllers/
+│   ├── agentesController.js
+│   └── casosController.js
+├── routes/
+│   ├── agentesRoutes.js
+│   └── casosRoutes.js
+├── repositories/
+│   ├── agentesRepository.js
+│   └── casosRepository.js
+├── utils/
+│   └── errorHandler.js
+├── server.js
+├── package.json
+└── docs/
+    └── swagger.js
+```
 
----
-
-## 📚 Recursos que Recomendo para Avançar
-
-- Para entender melhor o uso correto do UUID e geração de IDs:  
-  [Documentação oficial do uuid no npm](https://www.npmjs.com/package/uuid)
-
-- Para entender a arquitetura MVC e organização do projeto:  
-  https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH
-
-- Para aprender mais sobre validação e tratamento de erros em APIs Express.js:  
-  https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_
-
-- Para manipulação de arrays e filtros em JavaScript:  
-  https://youtu.be/glSgUKA5LjE?si=t9G2NsC8InYAU9cI
-
----
-
-## 📝 Resumo Rápido para Focar
-
-- **Trocar o pacote `uuid4` pelo `uuid` oficial para garantir IDs no formato UUID v4.**
-- **Ajustar a estrutura de pastas para incluir `docs/swagger.js` e `utils/errorHandler.js`.**
-- **Garantir que as operações CRUD funcionem corretamente com IDs válidos e validações consistentes.**
-- **Implementar filtros e ordenações nos endpoints para alcançar os requisitos bônus.**
-- **Considerar centralizar o tratamento de erros para deixar o código mais limpo e profissional.**
+Manter essa organização é fundamental para projetos maiores e para o seu crescimento como desenvolvedor! 👏
 
 ---
 
-## Finalizando 🚀
+## 💡 Dicas Extras para Você Continuar Evoluindo
 
-Jaummfreitas, você já está no caminho certo, com uma boa base e muitos acertos! 🎯 Agora é só ajustar esses detalhes que vão destravar seu projeto e fazer sua API ficar completa e robusta. Continue praticando, revisando seu código e aprendendo com cada desafio. Você está fazendo um ótimo trabalho e tenho certeza que vai evoluir muito! 👏👏
-
-Se precisar de ajuda para implementar qualquer uma dessas melhorias, pode contar comigo! Vamos juntos nessa missão! 💙👮‍♀️
-
-Um abraço forte e até a próxima revisão! 🤗✨
+- Considere criar funções utilitárias para validar datas e outros campos comuns, para evitar repetição de código.
+- Teste bastante os filtros e ordenações com diferentes query params para garantir que a lógica está correta.
+- Explore a criação de respostas de erro ainda mais detalhadas, com códigos e mensagens padronizadas — isso ajuda muito em APIs reais.
+- Continue explorando o Swagger para documentar sua API, isso é um diferencial enorme para equipes e clientes.
 
 ---
 
-# Code Buddy - seu parceiro de código sempre que precisar! 🚔💻
+## 📝 Resumo Rápido do Feedback
+
+- ✅ Seu projeto está muito bem estruturado e organizado.
+- ✅ Endpoints CRUD para agentes e casos estão implementados e funcionais.
+- ✅ Validações básicas e tratamento de erros estão corretos e claros.
+- ⚠️ Falta validar que a data de incorporação **não pode ser no futuro**.
+- ⚠️ Os filtros e ordenações para os endpoints `/agentes` e `/casos` ainda não foram implementados no controller.
+- ⭐ Continue investindo no bônus para aprimorar sua API e ganhar diferenciais.
+- 📚 Recomendo fortemente estudar validação de dados e manipulação de query params para destravar os bônus.
+
+---
+
+Jaummfreitas, você está no caminho certo e fez um trabalho muito sólido! 🚀 Com um ajuste na validação da data e a implementação dos filtros, sua API vai ficar impecável e pronta para qualquer desafio. Continue firme, aprendendo cada vez mais, e conte comigo para o que precisar! 💙
+
+Se quiser, posso te ajudar a montar juntos o código dos filtros e validações mais avançadas. Vamos nessa? 😉
+
+---
+
+Abraços de Code Buddy! 🤖✨
 
 > Caso queira tirar uma dúvida específica, entre em contato com o Chapter no nosso [discord](https://discord.gg/DryuHVnz).
 
